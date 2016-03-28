@@ -25,7 +25,7 @@ class MusicModel(object):
         self.batch_size = batch_size = config.batch_size
         self.num_steps = num_steps = config.num_steps
         size = config.hidden_size
-        vocab_size = config.vocab_size
+        num_songs = config.num_songs
 
         self._input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
         self._targets = tf.placeholder(tf.int32, [batch_size, num_steps])
@@ -39,7 +39,7 @@ class MusicModel(object):
         self._initial_state = cell.zero_state(batch_size, tf.float32)
 
         with tf.device("/cpu:0"):
-            embedding = tf.get_variable("embedding", [vocab_size, size])
+            embedding = tf.get_variable("embedding", [num_songs, size])
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
         if is_training and config.keep_prob < 1:
@@ -49,8 +49,8 @@ class MusicModel(object):
         outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
 
         output = tf.reshape(tf.concat(1, outputs), [-1, size])
-        softmax_w = tf.get_variable("softmax_w", [size, vocab_size])
-        softmax_b = tf.get_variable("softmax_b", [vocab_size])
+        softmax_w = tf.get_variable("softmax_w", [size, num_songs])
+        softmax_b = tf.get_variable("softmax_b", [num_songs])
         logits = tf.matmul(output, softmax_w) + softmax_b
         loss = tf.nn.seq2seq.sequence_loss_by_example(
                 [logits],
@@ -100,9 +100,9 @@ class Config(object):
     init_scale = 0.1
     max_grad_norm = 5
     num_layers = 2
-    num_steps = 5
+    num_steps = 20
     hidden_size = 200
-    max_epoch = 4
+    max_epoch = 6
     max_max_epoch = 13
     keep_prob = 1.0
     batch_size = 1
@@ -112,7 +112,7 @@ def run_epoch(session, m, data, song_to_id, eval_op):
     costs = 0.0
     iters = 0
 
-    for playlist in data_reader.session_iterator(data, song_to_id):
+    for playlist in data_reader.session_iterator(data, song_to_id, m.num_steps):
         state = m.initial_state.eval()
         for step, (x, y) in enumerate(data_reader.seq_iterator(playlist, m.num_steps)):
             cost, state, _ = session.run([m.cost, m.final_state, eval_op],
@@ -134,9 +134,11 @@ def main(_):
     song_to_id = data_reader.get_song_to_id_map(songs)
 
     config = Config()
+    config.num_songs = len(songs)
     eval_config = Config()
     eval_config.batch_size = 1
     eval_config.num_steps = 1
+    eval_config.num_songs = len(songs)
 
     with tf.Graph().as_default(), tf.Session() as session:
         initializer = tf.random_uniform_initializer(-config.init_scale,

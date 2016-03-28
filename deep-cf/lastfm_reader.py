@@ -1,11 +1,11 @@
 import collections
 import numpy as np
-from itertools import groupby
 
 
 def read_data(filepath):
+
     with open(filepath) as f:
-        raw_data = []
+        raw_data = {}
 
         for i in range(0, 10000):
             line = f.readline().rstrip('\n')
@@ -14,10 +14,12 @@ def read_data(filepath):
             # timestamp = components[1]
             song = (components[3], components[5])
 
-            raw_data.append((user_id, song))
+            if user_id not in raw_data:
+                raw_data[user_id] = []
+            raw_data[user_id].append(song)
 
-        songs = [song for _, song in raw_data]
-        return groupby(raw_data, lambda d: d[0]), songs
+        songs = set([song for sublist in [v for _, v in raw_data.items()] for song in sublist])
+        return raw_data, songs
 
 
 def get_song_to_id_map(songs):
@@ -30,13 +32,17 @@ def get_song_to_id_map(songs):
     return song_to_id
 
 
-def session_iterator(data, song_to_id):
-    for session in data:
-        yield session_to_seq(session, song_to_id)
+def session_iterator(data, song_to_id, seq_length):
+    for key in data:
+        if len(data[key]) <= seq_length:
+            print("Warning: skipping playlist due to length")
+            continue
+
+        yield session_to_seq(data[key], song_to_id)
 
 
 def seq_iterator(sequence, seq_length):
-    n = len(sequence) - 1 // seq_length
+    n = (len(sequence) - 1) // seq_length
     for i in range(n):
         x = sequence[i*seq_length:(i+1)*seq_length]
         y = sequence[i*seq_length+1:(i+1)*seq_length+1]
@@ -44,8 +50,7 @@ def seq_iterator(sequence, seq_length):
 
 
 def session_to_seq(session, song_to_id):
-    _, songs = session
-    return np.array([song_to_id[song] for _, song in songs])
+    return np.array([song_to_id[song] for song in session])
 
 
 def run():
