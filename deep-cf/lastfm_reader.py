@@ -1,13 +1,21 @@
 import collections
 import numpy as np
+import math
 
 
-def read_data(filepath):
+def get_data(filepath):
+    (training_start, training_end), (validation_start, validation_end), (test_start, test_end) = data_splits()
+    training_set, train_songs = read_data(filepath, training_start, training_end)
+    validation_set, validation_songs = read_data(filepath, validation_start, validation_end)
+    test_set, test_songs = read_data(filepath, test_start, test_end)
+    return training_set, validation_set, test_set, train_songs.union(validation_songs).union(test_songs)
 
+
+def read_data(filepath, index_start, index_end):
     with open(filepath) as f:
         raw_data = {}
 
-        for i in range(0, 10000):
+        for i in range(index_start, index_end):
             line = f.readline().rstrip('\n')
             components = line.split('\t')
             user_id = components[0]
@@ -20,6 +28,48 @@ def read_data(filepath):
 
         songs = set([song for sublist in [v for _, v in raw_data.items()] for song in sublist])
         return raw_data, songs
+
+
+def data_splits():
+    # parameters
+    total_obs = 19098862
+    total_obs_considered = 10000  # -->equal or lower than total_obs
+    training_ratio = 0.6
+    validation_ratio = 0.2
+    test_ratio = 0.2
+
+    # setting number of obs in each set
+    training_q = math.floor(total_obs_considered * training_ratio)
+    validation_q = math.floor(total_obs_considered * validation_ratio)
+    test_q = total_obs_considered - training_q - validation_q
+
+    training_start = math.floor(total_obs * np.random.uniform(low=0.0, high=1.0) - 1)
+    training_end = training_start + training_q - 1
+
+    if training_end > total_obs - 1:
+        training_end -= total_obs
+
+    validation_start = training_end + 1
+
+    if validation_start > total_obs - 1:
+        validation_start -= total_obs
+
+    validation_end = validation_start + validation_q - 1
+
+    if validation_end > total_obs - 1:
+        validation_end -= total_obs
+
+    test_start = validation_end + 1
+
+    if test_start > total_obs - 1:
+        test_start -= total_obs
+
+    test_end = test_start + test_q - 1
+
+    if test_end > total_obs - 1:
+        test_end -= total_obs
+
+    return (training_start, training_end), (validation_start, validation_end), (test_start, test_end)
 
 
 def get_song_to_id_map(songs):
@@ -44,8 +94,8 @@ def session_iterator(data, song_to_id, seq_length):
 def seq_iterator(sequence, seq_length):
     n = (len(sequence) - 1) // seq_length
     for i in range(n):
-        x = sequence[i*seq_length:(i+1)*seq_length]
-        y = sequence[i*seq_length+1:(i+1)*seq_length+1]
+        x = sequence[i * seq_length:(i + 1) * seq_length]
+        y = sequence[i * seq_length + 1:(i + 1) * seq_length + 1]
         yield (np.array([x]), np.array([y]))
 
 
@@ -64,4 +114,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
