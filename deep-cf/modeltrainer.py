@@ -3,7 +3,7 @@ import tensorflow as tf
 
 class Trainer:
 
-    def __init__(self, model, data, song_to_id, session_iterator, sequence_iterator):
+    def __init__(self, model, data, song_to_id, session_iterator, sequence_iterator, save_path):
         self._model = model
         self._num_steps = model.config.num_steps
         self._data = data
@@ -11,13 +11,19 @@ class Trainer:
         self._train_op = model.train_op()
         self._session_iterator = session_iterator
         self._sequence_iterator = sequence_iterator
+        self.save_path = save_path
 
     def train(self, session, num_epochs, hooks):
+        saver = tf.train.Saver()
+
         tf.initialize_all_variables().run()
         for i in range(0, num_epochs):
             train_loss = self.run_epoch(session)
             for hook in hooks:
                 hook(session, self._model, train_loss, i+1)
+
+        # Now that training is complete, save the trained parameters:
+        saver.save(session, self.save_path)
 
     def run_epoch(self, session):
         costs = 0.0

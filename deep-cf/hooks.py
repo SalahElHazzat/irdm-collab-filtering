@@ -1,21 +1,34 @@
+import tensorflow as tf
+
+
 class Hook:
-    def __init__(self):
-        raise NotImplementedError
+    def __init__(self, summary_writer, tag):
+        self.summary_writer = summary_writer
+        self.tag = tag
 
     def __call__(self, session, model, train_loss, epoch):
         raise NotImplementedError
+
+    def update_summary(self, session, step, value):
+        if self.summary_writer is not None:
+            current_summary = tf.scalar_summary(self.tag, value)
+            merged = tf.merge_summary([current_summary])
+            summary_string = session.run(merged)
+            self.summary_writer.add_summary(summary_string, step)
 
 
 class TrainLossHook(Hook):
-    def __init__(self):
-        pass
+    def __init__(self, summary_writer, tag):
+        super().__init__(summary_writer, tag)
 
     def __call__(self, session, model, train_loss, epoch):
         print("Epoch: %d Train Loss: %.3f" % (epoch, train_loss))
+        self.update_summary(session, epoch, train_loss)
 
 
 class GenericLossHook(Hook):
-    def __init__(self, data, name, session_iterator, sequence_iterator, song_to_id):
+    def __init__(self, data, name, session_iterator, sequence_iterator, song_to_id, summary_writer, tag):
+        super().__init__(summary_writer, tag)
         self._name = name
         self._data = data
         self._session_iterator = session_iterator
@@ -37,5 +50,4 @@ class GenericLossHook(Hook):
                 costs += cost
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, costs))
-
-
+        self.update_summary(session, epoch, costs)

@@ -5,35 +5,44 @@ import math
 
 def get_data(filepath):
     (training_start, training_end), (validation_start, validation_end), (test_start, test_end) = data_splits()
-    training_set, train_songs = read_data(filepath, training_start, training_end)
-    validation_set, validation_songs = read_data(filepath, validation_start, validation_end)
-    test_set, test_songs = read_data(filepath, test_start, test_end)
+    raw_data = read_data(filepath, 100000)
+
+    training_set, train_songs = group_data_subset(raw_data, training_start, training_end)
+    validation_set, validation_songs = group_data_subset(raw_data, validation_start, validation_end)
+    test_set, test_songs = group_data_subset(raw_data, test_start, test_end)
     return training_set, validation_set, test_set, train_songs.union(validation_songs).union(test_songs)
 
 
-def read_data(filepath, index_start, index_end):
+def read_data(filepath, limit):
     with open(filepath) as f:
-        raw_data = {}
+        raw_data = []
 
-        for i in range(index_start, index_end):
+        for i in range(0, limit):
             line = f.readline().rstrip('\n')
             components = line.split('\t')
             user_id = components[0]
             # timestamp = components[1]
             song = (components[3], components[5])
+            raw_data.append((user_id, song))
+        return raw_data
 
-            if user_id not in raw_data:
-                raw_data[user_id] = []
-            raw_data[user_id].append(song)
 
-        songs = set([song for sublist in [v for _, v in raw_data.items()] for song in sublist])
-        return raw_data, songs
+def group_data_subset(raw_data, start, end):
+    data = {}
+    for user_id, song in raw_data[start:end]:
+        if user_id not in data:
+            data[user_id] = []
+        data[user_id].append(song)
+
+    songs = set([song for sublist in [v for _, v in data.items()] for song in sublist])
+    return data, songs
 
 
 def data_splits():
     # parameters
-    total_obs = 19098862
-    total_obs_considered = 10000  # -->equal or lower than total_obs
+    # total_obs = 19098862
+    total_obs = 100000
+    total_obs_considered = 100000  # -->equal or lower than total_obs
     training_ratio = 0.6
     validation_ratio = 0.2
     test_ratio = 0.2
@@ -43,7 +52,8 @@ def data_splits():
     validation_q = math.floor(total_obs_considered * validation_ratio)
     test_q = total_obs_considered - training_q - validation_q
 
-    training_start = math.floor(total_obs * np.random.uniform(low=0.0, high=1.0) - 1)
+    # training_start = math.floor(total_obs * np.random.uniform(low=0.0, high=1.0) - 1)
+    training_start = 0
     training_end = training_start + training_q - 1
 
     if training_end > total_obs - 1:
