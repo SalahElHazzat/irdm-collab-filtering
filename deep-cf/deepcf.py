@@ -72,8 +72,8 @@ def evaluate(data_path, model_path):
 
     validation_hook = GenericLossHook(valid_data, 'Validation', data_reader.session_iterator, data_reader.seq_iterator,
                                       song_to_id, None, "Validation Loss")
-    test_hook = GenericLossHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
-                                song_to_id, None, "Test Loss")
+    # test_hook = GenericLossHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
+    #                            song_to_id, None, "Test Loss")
 
     with tf.Graph().as_default(), tf.Session() as session:
 
@@ -84,7 +84,7 @@ def evaluate(data_path, model_path):
         saver.restore(session, model_path)
 
         validation_hook(session, m, 0, 0)
-        test_hook(session, m, 0, 0)
+        # test_hook(session, m, 0, 0)
 
 
 def print_usage():
