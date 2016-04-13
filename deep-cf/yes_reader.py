@@ -37,7 +37,7 @@ def session_to_seq(session, _):
 
 def seq_iterator(sequence, seq_length):
     batch_size = len(sequence)
-    n = math.ceil(max([len(seq) for seq in sequence]) / seq_length)
+    n = int(math.ceil(max([len(seq) for seq in sequence]) / seq_length))
     for i in range(n):  # Iterate over the distinct sequences
         x_arr = np.zeros([batch_size, seq_length])
         y_arr = np.zeros([batch_size, seq_length])
