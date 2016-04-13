@@ -11,9 +11,9 @@ def get_data(filepath):
 
     total = 1000
     train_start = 0
-    train_end = math.floor(total * 0.6)
-    validation_start = train_end + 1
-    validation_end = total
+    train_end = int(math.floor(total * 0.6))
+    validation_start = int(train_end + 1)
+    validation_end = int(total)
 
     train_data = data[train_start:train_end]
     validation_data = data[validation_start:validation_end]
