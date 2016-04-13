@@ -19,7 +19,7 @@ class Hook:
 
 class TrainLossHook(Hook):
     def __init__(self, summary_writer, tag):
-        super().__init__(summary_writer, tag)
+        super(TrainLossHook, self).__init__(summary_writer, tag)
 
     def __call__(self, session, model, train_loss, epoch):
         print("Epoch: %d Train Loss: %.3f" % (epoch, train_loss))
@@ -28,7 +28,7 @@ class TrainLossHook(Hook):
 
 class GenericLossHook(Hook):
     def __init__(self, data, name, session_iterator, sequence_iterator, song_to_id, summary_writer, tag):
-        super().__init__(summary_writer, tag)
+        super(GenericLossHook, self).__init__(summary_writer, tag)
         self._name = name
         self._data = data
         self._session_iterator = session_iterator
