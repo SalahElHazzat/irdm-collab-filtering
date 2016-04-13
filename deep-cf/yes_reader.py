@@ -1,3 +1,4 @@
+import collections
 import numpy as np
 import math
 
@@ -9,7 +10,7 @@ def get_data(filepath):
     data = [[int(x) for x in line.split()] for line in lines[2::] if len(line.split()) > 1]
     songs = set([d for sublist in [v for v in data] for d in sublist])
 
-    total = 1000
+    total = len(data)
     train_start = 0
     train_end = int(math.floor(total * 0.6))
     validation_start = int(train_end + 1)
@@ -21,7 +22,12 @@ def get_data(filepath):
 
 
 def get_song_to_id_map(songs):
-    song_to_id = dict(zip(songs, songs))
+    counter = collections.Counter(songs)
+    count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+
+    songs, _ = list(zip(*count_pairs))
+    song_to_id = dict(zip(songs, range(len(songs))))
+
     return song_to_id
 
 
@@ -31,8 +37,8 @@ def session_iterator(data, song_to_id, _, batch_size):
         yield session_to_seq(data[batch*batch_size:(batch+1)*batch_size], song_to_id)
 
 
-def session_to_seq(session, _):
-    return np.array(session)
+def session_to_seq(session, song_to_id):
+    return np.array([[song_to_id[song] for song in sess] for sess in session])
 
 
 def seq_iterator(sequence, seq_length):
