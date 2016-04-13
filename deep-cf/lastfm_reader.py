@@ -115,7 +115,7 @@ def session_to_seq(session, song_to_id):
 
 
 def run():
-    filepath = '/Volumes/SAMSUNG/Studying/irdm-project/lastfm-dataset-1K/userid-timestamp-artid-artname-traid-traname.tsv'
+    filepath = '../../data/lastfm-dataset-1K/userid-timestamp-artid-artname-traid-traname.tsv'
     data, songs = read_data(filepath)
     song_to_id = get_song_to_id_map(songs)
     for session in session_iterator(data, song_to_id):
