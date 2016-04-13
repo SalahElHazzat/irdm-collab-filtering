@@ -40,13 +40,15 @@ class GenericLossHook(Hook):
     def __call__(self, session, model, train_loss, epoch):
         costs = 0.0
 
-        for playlist in self._session_iterator(self._data, self._song_to_id, model.config.num_steps):
+        for playlist in self._session_iterator(self._data, self._song_to_id, model.config.num_steps,
+                                               model.config.batch_size):
             state = model.initial_state.eval()
-            for step, (x, y) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
+            for step, (x, y, lengths) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
                 cost, state = session.run([model.cost, model.final_state],
                                              {model.input_data: x,
                                               model.targets: y,
-                                              model.initial_state: state})
+                                              model.initial_state: state,
+                                              model.actual_seq_lengths: lengths})
                 costs += cost
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, costs))

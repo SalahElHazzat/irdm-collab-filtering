@@ -3,7 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
-import lastfm_reader as data_reader
+# import lastfm_reader as data_reader
+import yes_reader as data_reader
 from musicmodel import MusicModel
 from modeltrainer import Trainer
 from hooks import *
@@ -24,10 +25,10 @@ class ModelConfig(object):
     max_grad_norm = 5
     num_layers = 2
     num_steps = 20
-    hidden_size = 200
-    embedding_size = 200
-    num_epochs = 5
-    batch_size = 1
+    hidden_size = 100
+    embedding_size = 100
+    num_epochs = 20
+    batch_size = 100
 
 
 def train(data_path, save_path):
@@ -97,8 +98,10 @@ def main(_):
         raise ValueError("Missing parameter(s)")
 
     if FLAGS.mode == "training":
+        print("Training model")
         train(FLAGS.data_path, FLAGS.model_path)
     elif FLAGS.mode == "evaluation":
+        print("Evaluating model")
         evaluate(FLAGS.data_path, FLAGS.model_path)
     else:
         print("Unrecognised mode: " + FLAGS.mode + " Please choose either 'training' or 'evaluation'")

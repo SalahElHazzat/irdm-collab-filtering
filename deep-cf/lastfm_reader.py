@@ -22,7 +22,8 @@ def read_data(filepath, limit):
             components = line.split('\t')
             user_id = components[0]
             # timestamp = components[1]
-            song = (components[3], components[5])
+            # song = (components[3], components[5])
+            song = (components[3])
             raw_data.append((user_id, song))
         return raw_data
 

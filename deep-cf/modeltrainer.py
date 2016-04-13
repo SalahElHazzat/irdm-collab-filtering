@@ -6,6 +6,7 @@ class Trainer:
     def __init__(self, model, data, song_to_id, session_iterator, sequence_iterator, save_path):
         self._model = model
         self._num_steps = model.config.num_steps
+        self._batch_size = model.config.batch_size
         self._data = data
         self._song_to_id = song_to_id
         self._train_op = model.train_op()
@@ -29,14 +30,14 @@ class Trainer:
         costs = 0.0
         # iters = 0
 
-        for playlist in self._session_iterator(self._data, self._song_to_id, self._num_steps):
+        for playlist_batch in self._session_iterator(self._data, self._song_to_id, self._num_steps, self._batch_size):
             state = self._model.initial_state.eval()  # Initialise the state
 
             # Despite having a playlist of length N, we can only pass num_steps songs to the RNN at a time,
             # corresponding to the number of cells that have been "unravelled". To handle this, we split the
             # playlist into num_steps chunks, run it through the unravelled RNN, keep track of the final state
             # and pass that back to the RNN as its initial state when running for the next sequence.
-            for step, (x, y) in enumerate(self._sequence_iterator(playlist, self._num_steps)):
+            for step, (x, y, length) in enumerate(self._sequence_iterator(playlist_batch, self._num_steps)):
 
                 # Now the key part of training - set the input data to x, the targets to y and the initial state to
                 # the current state. Ask tensorflow to evaluate the model_cost, final_state and train_op operators in
@@ -47,7 +48,8 @@ class Trainer:
                 cost, state, _ = session.run([self._model.cost, self._model.final_state, self._train_op],
                                              {self._model.input_data: x,
                                               self._model.targets: y,
-                                              self._model.initial_state: state})
+                                              self._model.initial_state: state,
+                                              self._model.actual_seq_lengths: length})
                 costs += cost
                 # iters += self._num_steps
 

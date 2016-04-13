@@ -10,7 +10,7 @@ class MusicModel(object):
         # Create placeholders for the input and the targets
         self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
         self._targets = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
-
+        self._actual_seq_lengths = tf.placeholder(tf.int32, [config.batch_size])
         lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size) # Create a basic LSTM cell
         # Now replicate the LSTM cell to create layers for a deep network
         cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * config.num_layers)
@@ -25,7 +25,8 @@ class MusicModel(object):
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
         inputs = [tf.squeeze(input_, [1]) for input_ in tf.split(1, config.num_steps, inputs)]
-        outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
+        outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state,
+                                 sequence_length=self._actual_seq_lengths)
 
         output = tf.reshape(tf.concat(1, outputs), [-1, config.hidden_size])
         softmax_w = tf.get_variable("softmax_w", [config.hidden_size, config.num_songs])
@@ -73,4 +74,8 @@ class MusicModel(object):
     @property
     def config(self):
         return self._config
+
+    @property
+    def actual_seq_lengths(self):
+        return self._actual_seq_lengths
 
