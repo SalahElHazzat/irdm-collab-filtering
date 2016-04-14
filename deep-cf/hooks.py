@@ -90,7 +90,7 @@ class EvaluationHook(Hook):
                                              name=None)
                         eval_costs[k_index] += out.eval()
 
-                    print("Step &s complete with cumulative evaluation cost %.3f" % (step, eval_costs))
+                    print("Step %s complete with cumulative evaluation cost %.3f" % (step, eval_costs))
 
                     model_costs += model_cost
                     # not sure if we need the model costs but could use it to compare with training
