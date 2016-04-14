@@ -37,8 +37,8 @@ class MusicModel(object):
         # Compute the cross-entropy loss of the sequence by comparing each prediction with each target
         loss = tf.nn.seq2seq.sequence_loss_by_example([logits], [tf.reshape(self._targets, [-1])],
                                                       [tf.ones([config.batch_size * config.num_steps])])
-        # Added precitions
-        self._prediction = output
+        # Added prediction
+        self._prediction = logits
 
         # Expose the cost and final_state
         self._cost = tf.reduce_sum(loss) / config.batch_size
@@ -74,10 +74,10 @@ class MusicModel(object):
     def final_state(self):
         return self._final_state
 
-    # # Added preditions
-    # @property
-    # def prediction(self):
-    #     return self._prediction
+    # Added preditions
+    @property
+    def prediction(self):
+        return self._prediction
 
     @property
     def config(self):

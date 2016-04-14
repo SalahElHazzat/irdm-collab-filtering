@@ -77,17 +77,21 @@ class EvaluationHook(Hook):
                 state = model.initial_state.eval()
 
                 for step, (x, y, lengths) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
-                    model_cost, state = session.run([model.cost, model.final_state],
+                    model_cost, state, prediction = session.run([model.cost, model.final_state, model.prediction],
                                                  {model.input_data: x,
                                                   model.targets: y,
                                                   model.initial_state: state,
                                                   model.actual_seq_lengths: lengths})
+                    # y needs to be int32/64
+                    y = y.astype(int).reshape(model.config.batch_size * model.config.num_steps, 1)
+                    # each
+                    for item in range(model.config.batch_size * model.config.num_steps):
+                        out = tf.nn.in_top_k(prediction[item].reshape(1, model.config.num_songs), y[item], k,
+                                             name=None)
+                        eval_costs[k_index] += out.eval()
 
-                    out = tf.nn.in_top_k(model.prediction, model.targets, k, name=None)
-                    eval_cost = tf.reduce_mean(out)
+                    print("Step &s complete with cumulative evaluation cost %.3f" % (step, eval_costs))
 
-                    eval_costs += eval_cost
-                    # eval_costs[k_index] + = eval_costs
                     model_costs += model_cost
                     # not sure if we need the model costs but could use it to compare with training
 
