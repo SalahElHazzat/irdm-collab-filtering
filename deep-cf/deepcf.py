@@ -64,14 +64,14 @@ def train(data_path, save_path):
 
 def evaluate(data_path, model_path):
     # CALL THE RELEVANT EVALUATION CODE
-    _, valid_data, test_data, songs = data_reader.get_data(data_path)
+    test_data, songs = data_reader.get_test_data(data_path)
     song_to_id = data_reader.get_song_to_id_map(songs)
 
     eval_config = ModelConfig()
     eval_config.num_songs = len(songs)
 
-    validation_hook = GenericLossHook(valid_data, 'Validation', data_reader.session_iterator, data_reader.seq_iterator,
-                                      song_to_id, None, "Validation Loss")
+    evaluation_hook = EvaluationHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
+                                     song_to_id, None, "Test Loss")
     # test_hook = GenericLossHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
     #                            song_to_id, None, "Test Loss")
 
@@ -83,7 +83,7 @@ def evaluate(data_path, model_path):
         saver = tf.train.Saver(tf.trainable_variables())
         saver.restore(session, model_path)
 
-        validation_hook(session, m, 0, 0)
+        evaluation_hook(session, m, 0, 0)
         # test_hook(session, m, 0, 0)
 
 

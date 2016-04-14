@@ -53,3 +53,43 @@ class GenericLossHook(Hook):
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, costs))
         self.update_summary(session, epoch, costs)
+
+
+class EvaluationHook(Hook):
+    def __init__(self, data, name, session_iterator, sequence_iterator, song_to_id, summary_writer, tag):
+        Hook.__init__(self, summary_writer, tag)
+        self._name = name
+        self._data = data
+        self._session_iterator = session_iterator
+        self._sequence_iterator = sequence_iterator
+        self._song_to_id = song_to_id
+
+    def __call__(self, session, model, train_loss, epoch):
+        # cost used in the actual model
+        model_costs = 0.0
+        eval_costs = 0.0
+        K = [5]  # add more possibly
+
+        for k_index, k in enumerate(K):
+            for playlist in self._session_iterator(self._data, self._song_to_id, model.config.num_steps,
+                                                   model.config.batch_size):
+
+                state = model.initial_state.eval()
+
+                for step, (x, y, lengths) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
+                    model_cost, state = session.run([model.cost, model.final_state],
+                                                 {model.input_data: x,
+                                                  model.targets: y,
+                                                  model.initial_state: state,
+                                                  model.actual_seq_lengths: lengths})
+
+                    out = tf.nn.in_top_k(model.prediction, model.targets, k, name=None)
+                    eval_cost = tf.reduce_mean(out)
+
+                    eval_costs += eval_cost
+                    # eval_costs[k_index] + = eval_costs
+                    model_costs += model_cost
+                    # not sure if we need the model costs but could use it to compare with training
+
+        print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, eval_costs))
+        self.update_summary(session, epoch, eval_costs)  # include eval cots in summary?

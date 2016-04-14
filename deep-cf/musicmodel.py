@@ -11,6 +11,7 @@ class MusicModel(object):
         self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
         self._targets = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
         self._actual_seq_lengths = tf.placeholder(tf.int32, [config.batch_size])
+        self._prediction = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
         lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size) # Create a basic LSTM cell
         # Now replicate the LSTM cell to create layers for a deep network
         cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * config.num_layers)
@@ -36,6 +37,8 @@ class MusicModel(object):
         # Compute the cross-entropy loss of the sequence by comparing each prediction with each target
         loss = tf.nn.seq2seq.sequence_loss_by_example([logits], [tf.reshape(self._targets, [-1])],
                                                       [tf.ones([config.batch_size * config.num_steps])])
+        # Added precitions
+        self._prediction = output
 
         # Expose the cost and final_state
         self._cost = tf.reduce_sum(loss) / config.batch_size
@@ -70,6 +73,11 @@ class MusicModel(object):
     @property
     def final_state(self):
         return self._final_state
+
+    # # Added preditions
+    # @property
+    # def prediction(self):
+    #     return self._prediction
 
     @property
     def config(self):

@@ -21,6 +21,17 @@ def get_data(filepath):
     return train_data, validation_data, None, songs
 
 
+def get_test_data(filepath):
+    with open(filepath) as f:
+        lines = f.read().splitlines()
+
+    test_data = [[int(x) for x in line.split()] for line in lines[2::] if len(line.split()) > 1]
+    songs = set([d for sublist in [v for v in test_data] for d in sublist])
+
+    # songs already given to us in the data files
+    return test_data, songs
+
+
 def get_song_to_id_map(songs):
     counter = collections.Counter(songs)
     count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
@@ -60,7 +71,7 @@ def seq_iterator(sequence, seq_length):
 
 
 def run():
-    filepath = '/Volumes/SAMSUNG/Studying/irdm-project/dataset/yes_big/train.txt'
+    filepath = '../../data/MIT-dataset/yes_big/train.txt'
     data = get_data(filepath)
     print(data)
 
