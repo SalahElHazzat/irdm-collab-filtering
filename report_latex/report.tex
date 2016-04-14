@@ -85,48 +85,48 @@ In this model we are looking at how to predict what a user will likely listen to
 Booked down problem into an NLP problem where we are looking at prediction the next most likely sequence of words – not sure if relevant 
 
 
-* Library: Tensorflow (https://www.tensorflow.org/)
-* Code based on Penn Tree Bank RNN example: https://www.tensorflow.org/versions/r0.7/tutorials/recurrent/index.html#recurrent-neural-networks
-* Uses LSTM RNN cells: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
-* Using optimiser: Adam Optimiser (reference: http://arxiv.org/pdf/1412.6980v8.pdf) - this is a variation of Stochastic Gradient Descent
-* Loss function is cross entropy loss - effectively the log of "perplexity" for each example in the sequence - intuitively, how many songs does the model think is likely to follow, a low perplexity means the model is very certain about its prediction, hence low perplexity is desirable. <-- Will want to mention why this is different from the evaluation metrics
+%Library: Tensorflow (https://www.tensorflow.org/)
+%Code based on Penn Tree Bank RNN example: https://www.tensorflow.org/versions/r0.7/tutorials/recurrent/index.html#recurrent-neural-networks
+%Uses LSTM RNN cells: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+%Using optimiser: Adam Optimiser (reference: http://arxiv.org/pdf/1412.6980v8.pdf) - this is a variation of Stochastic Gradient Descent
+%Loss function is cross entropy loss - effectively the log of "perplexity" for each example in the sequence - intuitively, how many songs does the model think is likely to follow, a low perplexity means the model is very certain about its prediction, hence low perplexity is desirable. <-- Will want to mention why this is different from the evaluation metrics
+%
+%IDEA based on the following article:
+%http://erikbern.com/2014/06/28/recurrent-neural-networks-for-collaborative-filtering/ 
 
-* IDEA based on the following article:
-http://erikbern.com/2014/06/28/recurrent-neural-networks-for-collaborative-filtering/ 
 
+%NB: Now using this dataset: http://www.cs.cornell.edu/~shuochen/lme/data_page.html
+%The advantage of this dataset over the last.fm one is that this one has separated playlists and also they've already done some data preprocessing to convert songs to ids and have each playlist on a separate line which makes it easier to use :+1: 
 
-NB: Now using this dataset: http://www.cs.cornell.edu/~shuochen/lme/data_page.html
-The advantage of this dataset over the last.fm one is that this one has separated playlists and also they've already done some data preprocessing to convert songs to ids and have each playlist on a separate line which makes it easier to use :+1: 
-
-# Methods
-## Recurrent Neural Networks
+\section{Methods}
+\section{Recurrent Neural Networks}
 Recurrent Neural Networks (RNNs) are a deep learning architecture ideally suited for sequential input data. By forming loops, the network is able to remember information about earlier data in the sequence in order to make better predictions. We feed the network a playlist as input and let it learn to predict the same playlist offset by 1 as a target. In this way, the network learns to predict the next song(s) a user may want to play based on the songs they've played so far in a particular playlist. [Reference: http://colah.github.io/posts/2015-08-Understanding-LSTMs/]
 
-### LSTM Cells
+\subsection{LSTM Cells}
 Vanilla RNNs use a simple non-linearity such as sigmoid or tanh in each of the cells in sequence. These vanilla RNNs are effective at using recent information for each current prediction task, but tend to quickly "forget" information from earlier in the sequence. In order to overcome this issue, more complex cells capable of modelling memory are used. These Long Short Term Memory (LSTM) cells contain a cell memory vector. They receive as input the current input data as well as the state from the previous LSTM cell in the chain. Using these inputs, the cell can decide whether to read from, write to or erase its memory using 3 soft "gates" namely the input gate, output gate and forget gate. It also decides how much of the input vs how much of its memory it wants to pass along the chain as the state, or to the output. The parameters controlling these gates 
  [Reference: http://colah.github.io/posts/2015-08-Understanding-LSTMs/]
 
-##Architecture
+\subsection{Architecture}
 The architecture of the model we built for this task is illustrated in Figure X (insert architecture image from poster). A sequence of input songs from a playlist are passed as inputs to an RNN's input cells. The embedding vector for each song is retrieved and these are passed into an LSTM cell, along with a state vector representing the internal state of the LSTM up to the particular point in the sequence. The output of the LSTM is a vector which is mapped using softmax to a probability distribution over which song the network thinks is most likely to follow after a particular point in the sequence. Note that although it is illustrated (and implemented) as if the entire sequence is passed in one go, it is best to think of the network as processing each song in the sequence one at a time, making a prediction before seeing the next song. In other words, only information from the current song in the sequence and information the network has chosen to remember about earlier songs in the sequence are used for making a prediction at any point.  
 
 Multiple layers of LSTM cells can be stacked in order to make the network deep. 
 
 Insert image of LSTM cell from poster
 
-## Parameters and Training
+\subsection{Parameters and Training}
 The parameters of the network include embedding vectors for each song, parameters for the 3 gates of the LSTM cells (a matrix and bias vector) separate for each layer and a matrix and bias parameter for the output softmax layer. The parameters are trained by comparing the output predictions of the network with the actual targets. The cross entropy loss is computed (formula below) and the derivative of this is fed back into the network by backpropagation in order to update the network parameters. [Reference:  http://neuralnetworksanddeeplearning.com/chap3.html]
 C=−1/n ∑x [y log a + (1−y) log (1−a)]  
 
-# Implementation
-The model described in the methods section was implemented in Python using Google's Tensorflow deep learning library [Reference: https://www.tensorflow.org]. The code for the model implementation was based to an extent on the Penn Tree Bank Language Modelling tutorial [Reference: https://www.tensorflow.org/versions/r0.8/tutorials/recurrent/index.html#recurrent-neural-networks]. 
+\section{Implementation}
+%The model described in the methods section was implemented in Python using Google's Tensorflow deep learning library [Reference: https://www.tensorflow.org]. The code for the model implementation was based to an extent on the Penn Tree Bank Language Modelling tutorial [Reference: https://www.tensorflow.org/versions/r0.8/tutorials/recurrent/index.html#recurrent-neural-networks]. 
 
-## Batching
+\subsection{Batching}
 In order to train efficiently using Stochastic Gradient Descent, batching is used whereby a batch of multiple playlists (the size of which is configurable) are passed to the network at each iteration. An issue arises due to different playlists having different lengths in the same batch. Luckily Tensorflow provides a principled way of dealing with this by allowing one to specify the lengths of each sequence in a batch. The RNNs zero their predictions when they reach the size limit of each sequence in a batch. 
 
-## Training Method
+\subsection{Training Method}
 The model is trained using a variation of Stochastic Gradient Descent called the Adam Optimiser (an implementation of which comes with Tensorflow). This is an efficient optimiser that uses first-order gradients and is able to automatically adapt its learning rate using first and second order moments [Reference: http://arxiv.org/pdf/1412.6980v8.pdf]. We therefore did not need to implement a learning rate decay schedule that would usually be required for stochastic gradient descent. In order to address the possibility of exploding gradients during training, gradient clipping was employed, whereby the magnitude of gradients are clipped if they exceed a threshold. 
 
-## Configuration
+\subsection{Configuration}
 The model we implemented used 2 layers, hidden state vector and embedding vector dimensions of 100, a batch size of 100, a gradient clipping threshold of 5 and an unravelled sequence length of 20 songs. 
 
 Conclusion / Results
@@ -153,18 +153,15 @@ Due to our offline learning we do not know if what we recommend is something tha
 More time available, we could train a model to predict latent representations of songs using the actual audio signal and this would all use to predict new song by running them through a deep neural network and recommending them to users based on similarity
 
 
-## Code structure
+\section{Code structure}
 The files we implemented for this project are listed below. Please see the comments in the files themselves for further details. 
-* musicmodel.py: This file provides the MusicModel class which constructs a tensorflow computation graph which represents the recurrent neural network unravelled for a configurable number of steps. Various placeholder operators from the computation graph are made publically visible so that the relevant input data, targets and initial state can be passed and the final costs (loss) can be accessed. 
-
-* modeltrainer.py: This file provides the Trainer class which is used to train the model. The train function runs a configurable number of training epochs and after each epoch calls a list of hooks which display information about the training progress. Once training has completed, the model parameters are saved to a file so that the trained model can be later restored and evaluated. Each epoch consists of running through the batches in the training data, passing these to the model and then evaluating the model's cost function and training operator to invoke backpropagation. If the sequences in the batch are too long, they are broken up into sequence_length chunks which are fed one at a time to the network, using the final state of the last chunk as the initial state. 
-
-* yes_reader.py: This file loads the data set which consists of a separate training and test file. The train file is split into a training and validation set. Iterators are provided which split the training data into batches of the correct sequence length. 
-
-* hooks.py: This file implements two hooks that output data during training. The first is a LossHook which merely reports the training set loss at the end of an epoch. The second runs the validation dataset through the network, calculates the loss for this dataset and reports it. The advantage of using such a hook is that the generalisation ability of the network can be assessed while it is being trained. 
-
-* deepcf.py: This file pulls the various peices together. Configuration of the model can be specified here and the training or evaluation can be invoked using command line arguments. 
-
+\begin{description}
+\item [musicmodel.py] This file provides the MusicModel class which constructs a tensorflow computation graph which represents the recurrent neural network unravelled for a configurable number of steps. Various placeholder operators from the computation graph are made publically visible so that the relevant input data, targets and initial state can be passed and the final costs (loss) can be accessed.
+\item [modeltrainer.py] This file provides the Trainer class which is used to train the model. The train function runs a configurable number of training epochs and after each epoch calls a list of hooks which display information about the training progress. Once training has completed, the model parameters are saved to a file so that the trained model can be later restored and evaluated. Each epoch consists of running through the batches in the training data, passing these to the model and then evaluating the model's cost function and training operator to invoke backpropagation. If the sequences in the batch are too long, they are broken up into sequence\textunderscore length chunks which are fed one at a time to the network, using the final state of the last chunk as the initial state.
+\item [yes\textunderscore reader.py] This file loads the data set which consists of a separate training and test file. The train file is split into a training and validation set. Iterators are provided which split the training data into batches of the correct sequence length. 
+\item [hooks.py] This file implements two hooks that output data during training. The first is a LossHook which merely reports the training set loss at the end of an epoch. The second runs the validation dataset through the network, calculates the loss for this dataset and reports it. The advantage of using such a hook is that the generalisation ability of the network can be assessed while it is being trained. 
+\item [deepcf.py] This file pulls the various peices together. Configuration of the model can be specified here and the training or evaluation can be invoked using command line arguments.
+\end{description}
 
 
 
