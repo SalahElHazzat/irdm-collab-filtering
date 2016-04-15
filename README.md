@@ -27,16 +27,16 @@ To train the model, navigate to the deep-cf subdirectory underneath the path whe
 
     python deepcf.py --mode="training" --data_path="[PATH-TO-DATA]" --model_path="[PATH-TO-SAVE-MODEL]"
   
-* [PATH-TO-DATA] refers to the path on your local machine of the train.txt file in the yes_big directory of the required dataset (for example /Users/joebloggs/dataset/yes_big/train.txt) 
-* [PATH-TO-SAVE-MODEL] is the path where you want the trained model parameters to be saved (for example ./out/save/mymodel.ckpt)
+* *[PATH-TO-DATA]* refers to the path on your local machine of the train.txt file in the yes_big directory of the required dataset (for example /Users/joebloggs/dataset/yes_big/train.txt) 
+* *[PATH-TO-SAVE-MODEL]* is the path where you want the trained model parameters to be saved (for example ./out/save/mymodel.ckpt)
 
 ## Evaluation
 To evaluate a pre-trained model, navigate to the deep-cf subdirectory underneath the path where you cloned the repository. Execute the following command:
 
     python deepcf.py --mode="evaluation" --data_path="[PATH-TO-DATA]" --model_path="[PATH-TO-MODEL]" --train_path="[PATH-TO-TRAIN-DATA]
   
-* [PATH-TO-DATA] refers to the path on your local machine of the test.txt file in the yes_big directory of the required dataset (for example /Users/joebloggs/dataset/yes_big/test.txt) 
-* [PATH-TO-MODEL] is the path of the saved model parameters (for example ./out/save/mymodel.ckpt)
-* [PATH-TO-TRAIN-DATA] is the path to the dataset used to train the model. This is only needed to ensure consistency between the songs in the training and test sets. 
+* *[PATH-TO-DATA]* refers to the path on your local machine of the test.txt file in the yes_big directory of the required dataset (for example /Users/joebloggs/dataset/yes_big/test.txt) 
+* *[PATH-TO-MODEL]* is the path of the saved model parameters (for example ./out/save/mymodel.ckpt)
+* *[PATH-TO-TRAIN-DATA]* is the path to the dataset used to train the model. This is only needed to ensure consistency between the songs in the training and test sets. 
 
 
