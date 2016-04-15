@@ -45,10 +45,10 @@ class GenericLossHook(Hook):
             state = model.initial_state.eval()
             for step, (x, y, lengths) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
                 cost, state = session.run([model.cost, model.final_state],
-                                             {model.input_data: x,
-                                              model.targets: y,
-                                              model.initial_state: state,
-                                              model.actual_seq_lengths: lengths})
+                                          {model.input_data: x,
+                                           model.targets: y,
+                                           model.initial_state: state,
+                                           model.actual_seq_lengths: lengths})
                 costs += cost
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, costs))
@@ -67,33 +67,36 @@ class EvaluationHook(Hook):
     def __call__(self, session, model, train_loss, epoch):
         # cost used in the actual model
         model_costs = 0.0
-        eval_costs = 0.0
+        eval_costs = {}
         K = [5]  # add more possibly
 
         for k_index, k in enumerate(K):
+            shaped_targets = tf.reshape(model.targets, [model.config.batch_size * model.config.num_steps])
+            top_k_op = tf.nn.in_top_k(model.prediction, shaped_targets, k)
+
+            eval_costs[k_index] = 0.0
+            step_count = 0
+
             for playlist in self._session_iterator(self._data, self._song_to_id, model.config.num_steps,
                                                    model.config.batch_size):
 
                 state = model.initial_state.eval()
 
                 for step, (x, y, lengths) in enumerate(self._sequence_iterator(playlist, model.config.num_steps)):
-                    model_cost, state, prediction = session.run([model.cost, model.final_state, model.prediction],
-                                                 {model.input_data: x,
-                                                  model.targets: y,
-                                                  model.initial_state: state,
-                                                  model.actual_seq_lengths: lengths})
-                    # y needs to be int32/64
-                    y = y.astype(int).reshape(model.config.batch_size * model.config.num_steps, 1)
-                    # each
-                    for item in range(model.config.batch_size * model.config.num_steps):
-                        out = tf.nn.in_top_k(prediction[item].reshape(1, model.config.num_songs), y[item], k,
-                                             name=None)
-                        eval_costs[k_index] += out.eval()
+                    state, result = session.run([model.final_state, top_k_op],
+                                                    {model.input_data: x,
+                                                     model.targets: y,
+                                                     model.initial_state: state,
+                                                     model.actual_seq_lengths: lengths})
 
-                    print("Step %s complete with cumulative evaluation cost %.3f" % (step, eval_costs))
+                    accuracy = float(result.astype(int).sum()) / len(result)  # Is this Precision@k? I'm not sure
+                    step_count += 1
+                    eval_costs[k_index] += accuracy
+                    print("Step %s complete with cumulative evaluation cost %.3f" % (step, eval_costs[k_index]))
 
-                    model_costs += model_cost
+                    # model_costs += model_cost
                     # not sure if we need the model costs but could use it to compare with training
+            print("Average accuracy for %d is %f" % (k, eval_costs[k_index]))
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, eval_costs))
         self.update_summary(session, epoch, eval_costs)  # include eval cots in summary?
