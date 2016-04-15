@@ -67,14 +67,19 @@ class EvaluationHook(Hook):
     def __call__(self, session, model, train_loss, epoch):
         # cost used in the actual model
         model_costs = 0.0
-        eval_costs = {}
-        K = [5]  # add more possibly
+        eval_accuracy = {}
+        K = [30]  # add more possibly
 
         for k_index, k in enumerate(K):
+
+            print("Using K = %f" % k)
+
             shaped_targets = tf.reshape(model.targets, [model.config.batch_size * model.config.num_steps])
             top_k_op = tf.nn.in_top_k(model.prediction, shaped_targets, k)
 
-            eval_costs[k_index] = 0.0
+            total_incorrect = 0
+            total_predictions = 0
+            eval_accuracy[k_index] = 0.0
             step_count = 0
 
             for playlist in self._session_iterator(self._data, self._song_to_id, model.config.num_steps,
@@ -89,12 +94,17 @@ class EvaluationHook(Hook):
                                                      model.initial_state: state,
                                                      model.actual_seq_lengths: lengths})
 
-                    accuracy = float(result.astype(int).sum()) / len(result)  # Is this Precision@k? I'm not sure
+                    result = tf.logical_not(result).eval()
+                    total_predictions += sum(lengths)
+                    total_incorrect += float(result.astype(int).sum())
+                    inaccuracy = total_incorrect / total_predictions
+
                     step_count += 1
-                    eval_costs[k_index] += accuracy
+                    eval_accuracy[k_index] = 1 - inaccuracy
 
-                print("Step %s complete with cumulative evaluation cost %.3f" % (step_count, eval_costs[k_index]))
-            print("Average accuracy for %d is %f" % (k, eval_costs[k_index]))
+                print("Step %s complete with evaluation accuracy %.10f" % (step_count, eval_accuracy[
+                    k_index]))
+            print("Average accuracy for %d is %f" % (k, eval_accuracy[k_index]))
 
-        print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, eval_costs))
-        self.update_summary(session, epoch, eval_costs)  # include eval cots in summary?
+        print("Epoch: %d %s Loss: %.10f" % (epoch, self._name, eval_accuracy))
+        self.update_summary(session, epoch, eval_accuracy)  # include eval cots in summary?

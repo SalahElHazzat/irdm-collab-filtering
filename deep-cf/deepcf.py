@@ -85,7 +85,7 @@ def evaluate(train_path, data_path, model_path):
 
 def print_usage():
     print('For training: deepcf.py --mode="training" --data_path="[PATH-TO-DATA]" --model_path="[PATH-TO-SAVE-MODEL]"')
-    print('For evaluation: deepcf.py --mode="evaluation" --data_path="[PATH-TO-DATA]" --train_path="[PATH-TO-TRAIN-DATA]" --model_path=[PATH-TO-SAVED-MODEL]')
+    print('For evaluation: deepcf.py --mode="evaluation" --data_path="[PATH-TO-TEST-DATA]" --train_path="[PATH-TO-TRAIN-DATA]" --model_path=[PATH-TO-SAVED-MODEL]')
 
 
 def main(_):
