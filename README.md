@@ -4,9 +4,11 @@ By Fahad Syed, Avishkar Bhoopchand, Hipolito Iturraspe
 The code in this repository can be used to train a Recurrent Neural Network recommendation model on the Yes.com music playlist training dataset or to evaluate a pre-trained model on the test dataset. 
 
 # Requirements
+### Platform
 * Operating System: Mac OS X, Windows or Linux
 * Language Platform: Python 2.7 or 3.3+ (follow the [instructions](https://www.python.org/) for your platform)
-Libraries:
+
+### Libraries
 * Tensorflow 0.7+ (follow the [installation instructions](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#download-and-setup))
 * Numpy 1.10+ (This is automatically installed when installing Tensorflow)
 
