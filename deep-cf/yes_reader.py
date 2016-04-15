@@ -49,7 +49,7 @@ def session_iterator(data, song_to_id, _, batch_size):
 
 
 def session_to_seq(session, song_to_id):
-    return np.array([[song_to_id[song] for song in sess] for sess in session])
+    return np.array([[song_to_id[song] for song in sess if song in song_to_id] for sess in session])
 
 
 def seq_iterator(sequence, seq_length):

@@ -9,7 +9,6 @@ from musicmodel import MusicModel
 from modeltrainer import Trainer
 from hooks import *
 
-
 flags = tf.flags
 logging = tf.logging
 
@@ -17,6 +16,7 @@ logging = tf.logging
 flags.DEFINE_string("data_path", None, "data_path")
 flags.DEFINE_string("mode", "train", "mode")
 flags.DEFINE_string("model_path", None, "model_path")
+flags.DEFINE_string("train_path", None, "model_path")
 FLAGS = flags.FLAGS
 
 
@@ -62,21 +62,18 @@ def train(data_path, save_path):
         trainer.train(session, train_config.num_epochs, hooks)
 
 
-def evaluate(data_path, model_path):
-    # CALL THE RELEVANT EVALUATION CODE
-    test_data, songs = data_reader.get_test_data(data_path)
+def evaluate(train_path, data_path, model_path):
+    _, _, _, songs = data_reader.get_data(train_path)
     song_to_id = data_reader.get_song_to_id_map(songs)
+    test_data, _ = data_reader.get_test_data(data_path)
 
     eval_config = ModelConfig()
     eval_config.num_songs = len(songs)
 
     evaluation_hook = EvaluationHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
                                      song_to_id, None, "Test Loss")
-    # test_hook = GenericLossHook(test_data, 'Test', data_reader.session_iterator, data_reader.seq_iterator,
-    #                            song_to_id, None, "Test Loss")
 
     with tf.Graph().as_default(), tf.Session() as session:
-
         with tf.variable_scope("model"):
             m = MusicModel(eval_config)
 
@@ -84,12 +81,11 @@ def evaluate(data_path, model_path):
         saver.restore(session, model_path)
 
         evaluation_hook(session, m, 0, 0)
-        # test_hook(session, m, 0, 0)
 
 
 def print_usage():
-    print('For training: deepcf.py --mode training --data_path="[PATH-TO-DATA]" --model_path=[PATH-TO-SAVE-MODEL]')
-    print('For evaluation: deepcf.py --mode evaluation --data_path="[PATH-TO-DATA]" --model_path=[PATH-TO-SAVED-MODEL]')
+    print('For training: deepcf.py --mode="training" --data_path="[PATH-TO-DATA]" --model_path="[PATH-TO-SAVE-MODEL]"')
+    print('For evaluation: deepcf.py --mode="evaluation" --data_path="[PATH-TO-DATA]" --train_path="[PATH-TO-TRAIN-DATA]" --model_path=[PATH-TO-SAVED-MODEL]')
 
 
 def main(_):
@@ -101,8 +97,12 @@ def main(_):
         print("Training model")
         train(FLAGS.data_path, FLAGS.model_path)
     elif FLAGS.mode == "evaluation":
+        if not FLAGS.train_path:
+            print_usage()
+            raise ValueError("Missing train_path parameter for evaluation mode")
+
         print("Evaluating model")
-        evaluate(FLAGS.data_path, FLAGS.model_path)
+        evaluate(FLAGS.train_path, FLAGS.data_path, FLAGS.model_path)
     else:
         print("Unrecognised mode: " + FLAGS.mode + " Please choose either 'training' or 'evaluation'")
 

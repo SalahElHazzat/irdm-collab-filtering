@@ -92,10 +92,8 @@ class EvaluationHook(Hook):
                     accuracy = float(result.astype(int).sum()) / len(result)  # Is this Precision@k? I'm not sure
                     step_count += 1
                     eval_costs[k_index] += accuracy
-                    print("Step %s complete with cumulative evaluation cost %.3f" % (step, eval_costs[k_index]))
 
-                    # model_costs += model_cost
-                    # not sure if we need the model costs but could use it to compare with training
+                print("Step %s complete with cumulative evaluation cost %.3f" % (step_count, eval_costs[k_index]))
             print("Average accuracy for %d is %f" % (k, eval_costs[k_index]))
 
         print("Epoch: %d %s Loss: %.3f" % (epoch, self._name, eval_costs))
