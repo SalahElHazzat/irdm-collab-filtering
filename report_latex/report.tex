@@ -10,7 +10,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{amsmath,calc}
-
+\usepackage{hyperref}
 
 \usepackage{pdfpages}
 \usepackage{mdwlist}
@@ -81,7 +81,7 @@ MSc Machine Learning\\
 \clearpage
 
 \section{Introduction}
-A recurrent neural network (RNN) is any network whose neurons send feedback signals to each other. This has shown to be sucessful in a number of different application. In this project we are looking at how to use a RNN for collabrative filtering, in particular how to use 
+In this project we are looking at how to use a recurrent neural network for collabrative filtering, in particular, given a sequence of songs that a user has previously listened to we want to predict what songs the user will most likely listen to next.
 
 
 %Library: Tensorflow (https://www.tensorflow.org/)
@@ -97,24 +97,30 @@ A recurrent neural network (RNN) is any network whose neurons send feedback sign
 %NB: Now using this dataset: http://www.cs.cornell.edu/~shuochen/lme/data_page.html
 %The advantage of this dataset over the last.fm one is that this one has separated playlists and also they've already done some data preprocessing to convert songs to ids and have each playlist on a separate line which makes it easier to use :+1: 
 
-\section{Methods}
 \section{Recurrent Neural Networks}
-Recurrent Neural Networks (RNNs) are a deep learning architecture ideally suited for sequential input data. By forming loops, the network is able to remember information about earlier data in the sequence in order to make better predictions. We feed the network a playlist as input and let it learn to predict the same playlist offset by 1 as a target. In this way, the network learns to predict the next song(s) a user may want to play based on the songs they've played so far in a particular playlist. [Reference: http://colah.github.io/posts/2015-08-Understanding-LSTMs/]
+Recurrent Neural Networks (RNNs) are a deep learning architecture ideally suited for sequential input data. By forming loops, the network is able to remember information about earlier data in the sequence in order to make better predictions. We feed the network a playlist as input and let it learn to predict the same playlist offset by 1 as a target. In this way, the network learns to predict the next song(s) a user may want to play based on the songs they've played so far in a particular playlist. \cite{LSTM}
 
 \subsection{LSTM Cells}
-Vanilla RNNs use a simple non-linearity such as sigmoid or tanh in each of the cells in sequence. These vanilla RNNs are effective at using recent information for each current prediction task, but tend to quickly "forget" information from earlier in the sequence. In order to overcome this issue, more complex cells capable of modelling memory are used. These Long Short Term Memory (LSTM) cells contain a cell memory vector. They receive as input the current input data as well as the state from the previous LSTM cell in the chain. Using these inputs, the cell can decide whether to read from, write to or erase its memory using 3 soft "gates" namely the input gate, output gate and forget gate. It also decides how much of the input vs how much of its memory it wants to pass along the chain as the state, or to the output. The parameters controlling these gates 
- [Reference: http://colah.github.io/posts/2015-08-Understanding-LSTMs/]
+Vanilla RNNs use a simple non-linearity such as sigmoid or tanh in each of the cells in sequence. These vanilla RNNs are effective at using recent information for each current prediction task, but tend to quickly "forget" information from earlier in the sequence. In order to overcome this issue, more complex cells capable of modelling memory are used. These Long Short Term Memory (LSTM) cells, figure ~\ref{LSTM_cell}, contain a cell memory vector. They receive as input the current input data as well as the state from the previous LSTM cell in the chain. Using these inputs, the cell can decide whether to read from, write to or erase its memory using 3 soft "gates" namely the input gate, output gate and forget gate. It also decides how much of the input vs how much of its memory it wants to pass along the chain as the state, or to the output. \cite{LSTM} 
 
 \subsection{Architecture}
 The architecture of the model we built for this task is illustrated in Figure X (insert architecture image from poster). A sequence of input songs from a playlist are passed as inputs to an RNN's input cells. The embedding vector for each song is retrieved and these are passed into an LSTM cell, along with a state vector representing the internal state of the LSTM up to the particular point in the sequence. The output of the LSTM is a vector which is mapped using softmax to a probability distribution over which song the network thinks is most likely to follow after a particular point in the sequence. Note that although it is illustrated (and implemented) as if the entire sequence is passed in one go, it is best to think of the network as processing each song in the sequence one at a time, making a prediction before seeing the next song. In other words, only information from the current song in the sequence and information the network has chosen to remember about earlier songs in the sequence are used for making a prediction at any point.  
 
 Multiple layers of LSTM cells can be stacked in order to make the network deep. 
-
-Insert image of LSTM cell from poster
+\begin{figure}
+\label{LSTM_cell}
+	\begin{center}
+		\includegraphics[scale = 0.4]{"../images/LSTM_cell"}
+		\caption{Digram showing the inner workings of an LSTM cell, our model uses multiple of these cells.}
+	\end{center}
+\end{figure}
 
 \subsection{Parameters and Training}
-The parameters of the network include embedding vectors for each song, parameters for the 3 gates of the LSTM cells (a matrix and bias vector) separate for each layer and a matrix and bias parameter for the output softmax layer. The parameters are trained by comparing the output predictions of the network with the actual targets. The cross entropy loss is computed (formula below) and the derivative of this is fed back into the network by backpropagation in order to update the network parameters. [Reference:  http://neuralnetworksanddeeplearning.com/chap3.html]
-C=−1/n ∑x [y log a + (1−y) log (1−a)]  
+The parameters of the network include embedding vectors for each song, parameters for the 3 gates of the LSTM cells (a matrix and bias vector) separate for each layer and a matrix and bias parameter for the output softmax layer. The parameters are trained by comparing the output predictions of the network with the actual targets. The cross entropy loss is computed (formula below) and the derivative of this is fed back into the network by backpropagation in order to update the network parameters. \cite{NN_deeplearning}
+
+\begin{equation}
+C = -\frac{1}{n} \sum y \log a + (1 - y) \log(1-a)
+\end{equation}
 
 \section{Implementation}
 %The model described in the methods section was implemented in Python using Google's Tensorflow deep learning library [Reference: https://www.tensorflow.org]. The code for the model implementation was based to an extent on the Penn Tree Bank Language Modelling tutorial [Reference: https://www.tensorflow.org/versions/r0.8/tutorials/recurrent/index.html#recurrent-neural-networks]. 
@@ -123,16 +129,38 @@ C=−1/n ∑x [y log a + (1−y) log (1−a)]
 In order to train efficiently using Stochastic Gradient Descent, batching is used whereby a batch of multiple playlists (the size of which is configurable) are passed to the network at each iteration. An issue arises due to different playlists having different lengths in the same batch. Luckily Tensorflow provides a principled way of dealing with this by allowing one to specify the lengths of each sequence in a batch. The RNNs zero their predictions when they reach the size limit of each sequence in a batch. 
 
 \subsection{Training Method}
-The model is trained using a variation of Stochastic Gradient Descent called the Adam Optimiser (an implementation of which comes with Tensorflow). This is an efficient optimiser that uses first-order gradients and is able to automatically adapt its learning rate using first and second order moments [Reference: http://arxiv.org/pdf/1412.6980v8.pdf]. We therefore did not need to implement a learning rate decay schedule that would usually be required for stochastic gradient descent. In order to address the possibility of exploding gradients during training, gradient clipping was employed, whereby the magnitude of gradients are clipped if they exceed a threshold. 
+The model is trained using a variation of Stochastic Gradient Descent called the Adam Optimiser (an implementation of which comes with Tensorflow). This is an efficient optimiser that uses first-order gradients and is able to automatically adapt its learning rate using first and second order moments \cite{Adams}. We therefore did not need to implement a learning rate decay schedule that would usually be required for stochastic gradient descent. In order to address the possibility of exploding gradients during training, gradient clipping was employed, whereby the magnitude of gradients are clipped if they exceed a threshold. 
 
 \subsection{Configuration}
 The model we implemented used 2 layers, hidden state vector and embedding vector dimensions of 100, a batch size of 100, a gradient clipping threshold of 5 and an unravelled sequence length of 20 songs. 
 
-Conclusion / Results
+\section{Results and Evaluation - might need different heading}
+\subsection{Comparison to item based recommendation systems}
+It should be noted that our approach has a subtle difference, from regular item based recommendation systems, on how the model is evaluated. Usually the model tried to predict a product to recommend and it is evaluated as successful if the prediction is in a set of targets. This allows the model to be evaluated using precision/recall/F-tests. In our approach, we are using only one target, do those metric don't hold for us. This a product of using an RNN and how we wanted to model the playlists. Furthermore, when recommending music the cost to the user for listening to a song or part of the song is much lower than say purchasing a product or watching a movie. 
+
+The evaluation we proposed is looking at the the number of correct prediction, i.e. the song is one of the top K predictions is a successful result. We divide this by the number of total predictions to get overall accuracy of the model.
+
+\begin{equation}
+\text{accuracy@k} = \frac{\text{number of targets are in the top K predictions}}{\text{total number of predictions}}
+\end{equation}
+\subsection{Results}
+
+We evaluate the model on the MIT test set. This test set has around around five times larger than our training set. - this might help the model not overfit?
+
+Running the evaluation with varying values of K we have the results below 
+[inset results table or just result] 
+We can see that for k=5 we have a accuracy of around 10\% which in comparison to randomly selecting a song which would be around <0.1\% much better. Increasing K we see that the accuracy of the model increases reaching 70\% when we choose K to be 500. The total number of songs is around 9000, considering this we see that the results do give good results. 
+
+ - Talk about comparing this to other recomendation system?
+ - possible rephrasing the above paragraph
 
 
-Possible steps to improve
-Scalability, possibly hard to scale, unless there is some recursive RNN alg. I remember reading somewhere that there is one.
+- section below may not be needed but might be worth putting in, still incomplete
+
+\subsection{Possible steps to improve}
+There are definitely ways we can improve the model, currently the training the model is slow which makes parameter selection difficult. Finding a better a simple but
+Scalability, possibly hard to scale, unless there is some recursive RNN alg. 
+
 Metric used in RNN different from actual metric used to measure performance.
 	hard to find the gradient of day recall.
 Using no a large dataset
@@ -162,7 +190,25 @@ The files we implemented for this project are listed below. Please see the comme
 \item [deepcf.py] This file pulls the various peices together. Configuration of the model can be specified here and the training or evaluation can be invoked using command line arguments.
 \end{description}
 
+\newpage
 
+\begin{thebibliography}{9}
+
+\bibitem{LSTM}
+  Christopher Olah
+  \emph{Undetstanding LSTM},
+\url{http://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+
+\bibitem{NN_deeplearning}
+  Michael Nielsen
+  \emph{Neural Networks and Deep Learning},
+\url{http://neuralnetworksanddeeplearning.com/chap3.html}
+
+\bibitem{Adams}
+  Diederik P. Kingma, Jimmy Lei Ba
+  \emph{Adam: A Method For Stochastic Optimization},
+http://arxiv.org/pdf/1412.6980v8.pdf
+\end{thebibliography}
 
 \end{document}
 

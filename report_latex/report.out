@@ -1,4 +1,4 @@
-\BOOKMARK [1][-]{section.1}{Methods}{}% 1
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Recurrent Neural Networks}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{LSTM Cells}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Architecture}{section.2}% 4
@@ -7,4 +7,8 @@
 \BOOKMARK [2][-]{subsection.3.1}{Batching}{section.3}% 7
 \BOOKMARK [2][-]{subsection.3.2}{Training Method}{section.3}% 8
 \BOOKMARK [2][-]{subsection.3.3}{Configuration}{section.3}% 9
-\BOOKMARK [1][-]{section.4}{Code structure}{}% 10
+\BOOKMARK [1][-]{section.4}{Results and Evaluation - might need different heading}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Comparison to item based recommendation systems}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Results}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.3}{Possible steps to improve}{section.4}% 13
+\BOOKMARK [1][-]{section.5}{Code structure}{}% 14

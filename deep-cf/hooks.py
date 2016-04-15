@@ -66,9 +66,8 @@ class EvaluationHook(Hook):
 
     def __call__(self, session, model, train_loss, epoch):
         # cost used in the actual model
-        model_costs = 0.0
         eval_accuracy = {}
-        K = [30]  # add more possibly
+        K = [500]  # add more possibly
 
         for k_index, k in enumerate(K):
 
@@ -102,8 +101,7 @@ class EvaluationHook(Hook):
                     step_count += 1
                     eval_accuracy[k_index] = 1 - inaccuracy
 
-                print("Step %s complete with evaluation accuracy %.10f" % (step_count, eval_accuracy[
-                    k_index]))
+                print("Step %s complete with evaluation accuracy %.10f" % (step_count, eval_accuracy[k_index]))
             print("Average accuracy for %d is %f" % (k, eval_accuracy[k_index]))
 
         print("Epoch: %d %s Loss: %.10f" % (epoch, self._name, eval_accuracy))
