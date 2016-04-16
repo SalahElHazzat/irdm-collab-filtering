@@ -41,6 +41,7 @@
 
 \newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 \title{Music Recommendation using Recurrent Neural Networks}
+
 \usepackage{tikz}
 \usetikzlibrary{arrows}
 
@@ -48,7 +49,7 @@
 Avishkar Bhoopchand\\
 Department of Computer Science\\
 MSc Computational Statistics and Machine Learning\\
-\texttt{	avishkar.bhoopchand.15@ucl.ac.uk} \\
+\texttt{EMAIL@ucl.ac.uk} \\
 \And
 Fahad Syed\\
 Department of Computer Science\\
@@ -78,10 +79,13 @@ MSc Machine Learning\\
 
 
 \maketitle
+\begin{center}
+\textbf{https://github.com/avishkar58/irdm-collab-filtering}
+\end{center}
 \clearpage
 
 \section{Introduction}
-In this project we are looking at how to use a recurrent neural network for collabrative filtering, in particular, given a sequence of songs that a user has previously listened to we want to predict what songs the user will most likely listen to next.
+In this project we are looking at how to use a Recurrent Neural Network (RNN) for collabrative filtering, in particular, given a sequence of songs that a user has previously listened to we want to predict what songs the user will most likely listen to next.
 
 
 %Library: Tensorflow (https://www.tensorflow.org/)
@@ -97,23 +101,39 @@ In this project we are looking at how to use a recurrent neural network for coll
 %NB: Now using this dataset: http://www.cs.cornell.edu/~shuochen/lme/data_page.html
 %The advantage of this dataset over the last.fm one is that this one has separated playlists and also they've already done some data preprocessing to convert songs to ids and have each playlist on a separate line which makes it easier to use :+1: 
 
-\section{Recurrent Neural Networks}
+Related work in the field includes \cite{playlist-prediction} in which the authors argue that automatically generated playlists have become important for accessing large music collections. The method used in their paper was Latent Markov Embeddings which do not require a feature representation of songs, but rather derive a useful embedding of songs from example playlists. This idea is essentially the same as the word embedding concept used in word2vec for English sentences \cite{word2vec}. However there does not appear to be much published literature relating to the use of RNNs for sequential recommendations, other than some suggestions that Spotify is using something similar. We based our idea on the article by Erik Bernhardsson \cite{erikbern} who experimented with RNNs on playlist data while working at Spotify and discovered in A/B testing that the method was superior to other collaborative filtering algorithms for the task. 
+
+\subsection{The Dataset}
+We initially tried using the Last.fm Music Recommendation dataset \cite{lastfm} which contained the entire play history of 1000 users of the Last.fm music service. Initial experimentation with this dataset revealed that it was difficult to split these data into distinct sessions (as all the data for a user was concatenated into one long sequence) and that our model did not generalise well on this dataset. We subsequently discovered the dataset used by \cite{playlist-prediction} which contained playlist data extracted from Yes.com and Last.fm, already cleaned and split into a training and test set. We used the "Yes big" dataset consisting of 9 775 songs, 172 510 song transitions in the training set and 1 602 079 transitions in the test set. 
+
+\section{Methods}
+\subsection{Recurrent Neural Networks}
 Recurrent Neural Networks (RNNs) are a deep learning architecture ideally suited for sequential input data. By forming loops, the network is able to remember information about earlier data in the sequence in order to make better predictions. We feed the network a playlist as input and let it learn to predict the same playlist offset by 1 as a target. In this way, the network learns to predict the next song(s) a user may want to play based on the songs they've played so far in a particular playlist. \cite{LSTM}
 
 \subsection{LSTM Cells}
-Vanilla RNNs use a simple non-linearity such as sigmoid or tanh in each of the cells in sequence. These vanilla RNNs are effective at using recent information for each current prediction task, but tend to quickly "forget" information from earlier in the sequence. In order to overcome this issue, more complex cells capable of modelling memory are used. These Long Short Term Memory (LSTM) cells, figure ~\ref{fig:LSTM_cell}, contain a cell memory vector. They receive as input the current input data as well as the state from the previous LSTM cell in the chain. Using these inputs, the cell can decide whether to read from, write to or erase its memory using 3 soft "gates" namely the input gate, output gate and forget gate. It also decides how much of the input vs how much of its memory it wants to pass along the chain as the state, or to the output. \cite{LSTM} 
+Vanilla RNNs use a simple non-linearity such as sigmoid or tanh in each of the cells in sequence. These vanilla RNNs are effective at using recent information for each current prediction task, but tend to quickly "forget" information from earlier in the sequence. In order to overcome this issue, more complex cells capable of modelling memory are used. These Long Short Term Memory (LSTM) cells, figure ~\ref{LSTM_cell}, contain a cell memory vector. They receive as input the current input data as well as the state from the previous LSTM cell in the chain. Using these inputs, the cell can decide whether to read from, write to or erase its memory using 3 soft "gates" namely the input gate, output gate and forget gate. It also decides how much of the input vs how much of its memory it wants to pass along the chain as the state, or to the output. \cite{LSTM} 
 
-\subsection{Architecture}
-The architecture of the model we built for this task is illustrated in Figure X (insert architecture image from poster). A sequence of input songs from a playlist are passed as inputs to an RNN's input cells. The embedding vector for each song is retrieved and these are passed into an LSTM cell, along with a state vector representing the internal state of the LSTM up to the particular point in the sequence. The output of the LSTM is a vector which is mapped using softmax to a probability distribution over which song the network thinks is most likely to follow after a particular point in the sequence. Note that although it is illustrated (and implemented) as if the entire sequence is passed in one go, it is best to think of the network as processing each song in the sequence one at a time, making a prediction before seeing the next song. In other words, only information from the current song in the sequence and information the network has chosen to remember about earlier songs in the sequence are used for making a prediction at any point.  
-
-Multiple layers of LSTM cells can be stacked in order to make the network deep. 
 \begin{figure}
-\label{fig:LSTM_cell}
+	\label{LSTM_cell}
 	\begin{center}
 		\includegraphics[scale = 0.4]{"../images/LSTM_cell"}
 		\caption{Digram showing the inner workings of an LSTM cell, our model uses multiple of these cells.}
 	\end{center}
 \end{figure}
+
+\subsection{Architecture}
+The architecture of the model we built for this task is illustrated in Figure \ref{architecture}. A sequence of input songs from a playlist are passed as inputs to an RNN's input cells. The embedding vector for each song is retrieved and these are passed into an LSTM cell, along with a state vector representing the internal state of the LSTM up to the particular point in the sequence. The output of the LSTM is a vector which is mapped using softmax to a probability distribution over which song the network thinks is most likely to follow after a particular point in the sequence. The output sequence is compared to the same input sequence offset by 1, so that the network learns to predict the next song given a playlist 
+
+Note that although it is illustrated as if the entire sequence is passed in one go, it is best to think of the network as processing each song in the sequence one at a time, making a prediction before seeing the next song. In other words, only information from the current song in the sequence and information the network has chosen to remember about earlier songs in the sequence are used for making a prediction at any point.  
+
+\begin{figure}
+	\label{architecture}
+	\begin{center}
+		\includegraphics[scale = 0.3]{"../images/architecture"}
+		\caption{The architecture of our recommendation model}
+	\end{center}
+\end{figure}
+
 
 \subsection{Parameters and Training}
 The parameters of the network include embedding vectors for each song, parameters for the 3 gates of the LSTM cells (a matrix and bias vector) separate for each layer and a matrix and bias parameter for the output softmax layer. The parameters are trained by comparing the output predictions of the network with the actual targets. The cross entropy loss is computed (formula below) and the derivative of this is fed back into the network by backpropagation in order to update the network parameters. \cite{NN_deeplearning}
@@ -123,7 +143,7 @@ C = -\frac{1}{n} \sum y \log a + (1 - y) \log(1-a)
 \end{equation}
 
 \section{Implementation}
-%The model described in the methods section was implemented in Python using Google's Tensorflow deep learning library [Reference: https://www.tensorflow.org]. The code for the model implementation was based to an extent on the Penn Tree Bank Language Modelling tutorial [Reference: https://www.tensorflow.org/versions/r0.8/tutorials/recurrent/index.html#recurrent-neural-networks]. 
+The model described in the methods section was implemented in Python using Google's Tensorflow deep learning library \cite{tensorflow}. The code for the model implementation was based to an extent on the Penn Tree Bank Language Modelling tutorial \cite{tensorflow-ptb}. 
 
 \subsection{Batching}
 In order to train efficiently using Stochastic Gradient Descent, batching is used whereby a batch of multiple playlists (the size of which is configurable) are passed to the network at each iteration. An issue arises due to different playlists having different lengths in the same batch. Luckily Tensorflow provides a principled way of dealing with this by allowing one to specify the lengths of each sequence in a batch. The RNNs zero their predictions when they reach the size limit of each sequence in a batch. 
@@ -134,53 +154,53 @@ The model is trained using a variation of Stochastic Gradient Descent called the
 \subsection{Configuration}
 The model we implemented used 2 layers, hidden state vector and embedding vector dimensions of 100, a batch size of 100, a gradient clipping threshold of 5 and an unravelled sequence length of 20 songs. 
 
-\subsection{Data Set}
-The dataset we originally attempted to use was lastfm's 1K users full listening history, we felt that this did not give adequate results and would tend to overfit on the training set?
-
-The dataset we used was the crawled from lastfm and yes.com's API, collected by Department of Computer Science, Cornell University. \cite{cornelldataset}
-
 \section{Results and Evaluation - might need different heading}
 \subsection{Comparison to item based recommendation systems}
-It should be noted that our approach has a subtle difference, from regular item based recommendation systems, on how the model is evaluated. Usually the model tried to predict a product to recommend and it is evaluated as successful if the prediction is in a set of targets. This allows the model to be evaluated using precision/recall/F-tests. In our approach, we are using only one target, do those metric don't hold for us. This a product of using an RNN and how we wanted to model the playlists. Furthermore, when recommending music the cost to the user for listening to a song or part of the song is much lower than say purchasing a product or watching a movie, so we allow  recommending a larger number of songs, even if many of those songs are incorrect (may be another word?).
+It should be noted that our approach has a subtle difference, from regular item based recommendation systems, on how the model is evaluated. Usually the model tried to predict a product to recommend and it is evaluated as successful if the prediction is in a set of targets. This allows the model to be evaluated using precision/recall/F-tests. In our approach, we are using only one target, do those metric don't hold for us. This a product of using an RNN and how we wanted to model the playlists. Furthermore, when recommending music the cost to the user for listening to a song or part of the song is much lower than say purchasing a product or watching a movie. 
 
-The evaluation we proposed is looking at the the number of correct prediction, i.e. if song is one of the top K predictions is a correct prediction. We divide this by the number of total predictions to get overall accuracy of the model.
+The evaluation we proposed is looking at the the number of correct prediction, i.e. the song is one of the top K predictions is a successful result. We divide this by the number of total predictions to get overall accuracy of the model.
 
 \begin{equation}
 \text{accuracy@k} = \frac{\text{number of targets are in the top K predictions}}{\text{total number of predictions}}
 \end{equation}
 \subsection{Results}
 
-We evaluate the model on the MIT test set. This test set has around around five times larger than our training set.
+We evaluate the model on the MIT test set. This test set has around around five times larger than our training set. - this might help the model not overfit?
 
 Running the evaluation with varying values of K we have the results below 
 [inset results table or just result] 
-We can see that for k=5 we have a accuracy of around 10\% which in comparison to randomly selecting a song which would be around 0.1\% much better. Increasing K we see that the accuracy of the model increases reaching 70\% when we choose K to be 500. The total number of songs is around 9000, considering this we see that the results do give good results. 
-
-The accuracy does plateau after around k=X.  
-
-Even with this metric it is hard to another metric which compares 
+We can see that for k=5 we have a accuracy of around 10\% which in comparison to randomly selecting a song which would be around <0.1\% much better. Increasing K we see that the accuracy of the model increases reaching 70\% when we choose K to be 500. The total number of songs is around 9000, considering this we see that the results do give good results. 
 
  - Talk about comparing this to other recomendation system?
  - possible rephrasing the above paragraph
 
 
-- section below may not be needed but might be worth putting in
+- section below may not be needed but might be worth putting in, still incomplete
 
-\subsection{Difficulty in interpreting the results}
-There are a few things we need to consider when we look at these results. 
+\subsection{Improvements and Future Work}
+There are definitely ways we can improve the model, currently training the model is slow which made parameter selection difficult. This is a common issue with deep learning systems. Getting our model running on a GPU would significantly improve training speed, but we did not have the time to accomplish this. 
 
-A recommendation system is successful when a user actually uses the system, this is not always the case and could be attributed to a number of factors. How useful user perceives the recommendations to be, if we are recommendation every possible songs then out precision is extremely small, this is something that our evaluation metric can not return. Even if the we only recommend a few songs to a user, they need to trust the system to actually use it. 
+Metric used in RNN different from actual metric used to measure performance.
+	hard to find the gradient of day recall.
+Using no a large dataset
 
-Another problem, is that it can be very difficult to tell if a user does not like a song. If the song is simply not played then, that may indicate that they do not want to listen to it, but more likely that they either did not see the song or have the opportunity to listen it. Even if they do play a song, it cannot guarantee that they like. This makes it difficult to recommend songs which they may not have heard about. \cite{Evaluation}
+The effect of many of these properties on the user experience is unclear, and depends on the application, without doing extensive online testing it is hard to tell which features to use to measure recommender systems, that have the most benefit to the user.
 
-The effect of many of these properties on the user experience is unclear, and depends on the application, without doing extensive online testing it is hard to tell which features to use to measure recommender systems, that have the most benefit to the user. Most recommendation systems are finely tuned using extensive testing and user feedback. Our implementation lacks both of these and results should be taken with caution. There are also practical considerations, it is impractical to recommend a user hundreds of songs.
+Users need to trust the system. Hard problem. How long we should recommend a song if a user does not click on it.
 
-\subsection{Possible steps to improve}
-There are definitely ways we can improve the model, currently the training the model is slow which makes parameter selection difficult. Metric used in RNN different from actual metric used to measure performance. We could look at find another evaluation metric where we can implement into the the RNN, so the the it trains to minimise the actual metric. More time available, we could train a model to predict latent representations of songs using the actual audio signal and this would all use to predict new song by running them through a deep neural network and recommending them to users based on similarity.
+recommendations - youtube does this like crazy, doesn’t really help in all honesty.
+Novelty - recommend items that the user did not know about
+Serendipity - how successful the recommends are; possible hard to evaluate. 
+Scalability 
+Robustness
+How to calculate the cost benefit and false/true positive/negative - hard task
+Due to our offline learning we do not know if what we recommend is something that the user will actually wants, if they don’t click on it does not mean that the user does not like or want to the content as they may have just not looked at it. And if they clicked on it does not mean that they actually want that product.
+
+More time available, we could train a model to predict latent representations of songs using the actual audio signal and this would all use to predict new song by running them through a deep neural network and recommending them to users based on similarity
 
 
 \section{Code structure}
-The files we implemented for this project are listed below. Please see the comments in the files themselves for further details. 
+All code built for this system can be found in Github at the url \textbf{\url{https://github.com/avishkar58/irdm-collab-filtering/}}. The major files we implemented are listed below. Please see the comments in the files themselves for further details. 
 \begin{description}
 \item [musicmodel.py] This file provides the MusicModel class which constructs a tensorflow computation graph which represents the recurrent neural network unravelled for a configurable number of steps. Various placeholder operators from the computation graph are made publically visible so that the relevant input data, targets and initial state can be passed and the final costs (loss) can be accessed.
 \item [modeltrainer.py] This file provides the Trainer class which is used to train the model. The train function runs a configurable number of training epochs and after each epoch calls a list of hooks which display information about the training progress. Once training has completed, the model parameters are saved to a file so that the trained model can be later restored and evaluated. Each epoch consists of running through the batches in the training data, passing these to the model and then evaluating the model's cost function and training operator to invoke backpropagation. If the sequences in the batch are too long, they are broken up into sequence\textunderscore length chunks which are fed one at a time to the network, using the final state of the last chunk as the initial state.
@@ -206,28 +226,36 @@ The files we implemented for this project are listed below. Please see the comme
 \bibitem{Adams}
   Diederik P. Kingma, Jimmy Lei Ba
   \emph{Adam: A Method For Stochastic Optimization},
-\url{http://arxiv.org/pdf/1412.6980v8.pdf}
+	\url{http://arxiv.org/pdf/1412.6980v8.pdf}
 
-\bibitem{Evaluation}
-  Guy Shani, Asela Gunawardana
-  \emph{Evaluating Recommendation Systems},
-\url{http://research.microsoft.com/pubs/115396/EvaluationMetrics.TR.pdf}
+\bibitem{erikbern}
+	Erik Bernhardsson.
+	\emph{Recurrent Neural Networks for Collaborative Filtering}
+	\url{http://erikbern.com/2014/06/28/recurrent-neural-networks-for-collaborative-filtering/}
+	
+\bibitem{playlist-prediction}
+Shuo Chen, Joshua L. Moore, Douglas Turnbull, Thorsten Joachims, 
+\emph{Playlist Prediction via Metric Embedding}, ACM Conference on Knowledge Discovery and Data Mining (KDD), 2012.
 
-\bibitem{cornelldatasetref1}
-  Shuo Chen, Joshua L. Moore, Douglas Turnbull, Thorsten Joachims  \emph{ Playlist Prediction via Metric Embedding} ACM Conference on Knowledge Discovery and Data Mining (KDD), 2012.
+\bibitem{word2vec}
+Mikolov, Tomas and Sutskever, Ilya and Chen, Kai and Corrado, Greg S and Dean, Jeff
+\emph{Distributed representations of words and phrases and their compositionality},
+Advances in neural information processing systems Pages 3111--3119, 2013
 
+\bibitem{lastfm}
+Music Recommendation Datasets for Research. 
+\emph{Last.fm Dataset - 1K users}. 
+\url{http://www.dtic.upf.edu/~ocelma/MusicRecommendationDataset/lastfm-1K.html}
 
-\bibitem{cornelldatasetref2}
-  ] Joshua L. Moore, Shuo Chen, Thorsten Joachims, Douglas Turnbull\emph{ Learning to Embed Songs and Tags for Playlists Prediction} International Society for Music Information Retrieval (ISMIR), 2012.
+\bibitem{tensorflow}
+Tensorflow
+\url{https://www.tensorflow.org/}
 
+\bibitem{tensorflow-ptb}
+Tensorflow. 
+\emph{Recurrent Neural Networks}. 
+\url{https://www.tensorflow.org/versions/r0.8/tutorials/recurrent/index.html#recurrent-neural-networks}
 
-\bibitem{cornelldatasetref3}
-  Shuo Chen, Jiexun Xu, Thorsten Joachims, . Turnbull, Thorsten Joachims  \emph{ Multi-space Probabilistic Sequence Modeling} ACM Conference on Knowledge Discovery and Data Mining (KDD), 2013
-
-
-\bibitem{cornelldataset}
-  Shuo Chen \emph{ Shuo Chen} 
-  \url{http://www.cs.cornell.edu/~shuochen/lme/data_page.html}
 \end{thebibliography}
 
 \end{document}

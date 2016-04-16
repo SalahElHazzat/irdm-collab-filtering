@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.17)  16 APR 2016 11:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.11.15)  16 APR 2016 12:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -692,21 +692,21 @@ File: pgflibraryarrows.code.tex 2013/09/23 v3.0.0 (rcs-revision 1.16)
 )) (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 77.
-LaTeX Font Info:    ... okay on input line 77.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 77.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 78.
+LaTeX Font Info:    ... okay on input line 78.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 78.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -727,7 +727,7 @@ File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 \makeMPintoPDFobject=\count163
 \everyMPtoPDFconversion=\toks36
 )
-Package hyperref Info: Link coloring OFF on input line 77.
+Package hyperref Info: Link coloring OFF on input line 78.
  (/usr/local/texlive/2015/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -736,9 +736,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count164
 )
-LaTeX Info: Redefining \ref on input line 77.
-LaTeX Info: Redefining \pageref on input line 77.
-LaTeX Info: Redefining \nameref on input line 77.
+LaTeX Info: Redefining \ref on input line 78.
+LaTeX Info: Redefining \pageref on input line 78.
+LaTeX Info: Redefining \nameref on input line 78.
 
 (./report.out) (./report.out)
 \@outlinefile=\write4
@@ -767,20 +767,20 @@ Package caption Info: End \AtBeginDocument code.
 
 ABD: EveryShipout initializing macros
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
-LaTeX Font Info:    Try loading font information for U+msa on input line 81.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 82.
+LaTeX Font Info:    Try loading font information for U+msa on input line 82.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 81.
+LaTeX Font Info:    Try loading font information for U+msb on input line 82.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 81.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 82.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 82.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
@@ -788,77 +788,117 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 
 {/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 87.
 
 
-Package caption Warning: \label without proper \caption on input line 111.
+Package caption Warning: \label without proper \caption on input line 117.
 See the caption package documentation for explanation.
 
 
-LaTeX Warning: Reference `fig:LSTM_cell' on page 2 undefined on input line 104.
+LaTeX Warning: Reference `LSTM_cell' on page 2 undefined on input line 114.
 
-
-<"../images/LSTM_cell".png, id=82, 698.61pt x 428.60126pt>
+<"../images/LSTM_cell".png, id=87, 698.61pt x 428.60126pt>
 File: "../images/LSTM_cell".png Graphic file (type png)
 
 <use "../images/LSTM_cell".png>
-Package pdftex.def Info: "../images/LSTM_cell".png used on input line 113.
+Package pdftex.def Info: "../images/LSTM_cell".png used on input line 119.
 (pdftex.def)             Requested size: 279.43904pt x 171.43745pt.
 
-Underfull \vbox (badness 3646) has occurred while \output is active []
 
- [2
+Package caption Warning: \label without proper \caption on input line 130.
+See the caption package documentation for explanation.
 
-]
-Underfull \vbox (badness 4441) has occurred while \output is active []
 
- [3 <../images/LSTM_cell.png>] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 197--200
+LaTeX Warning: Reference `architecture' on page 2 undefined on input line 125.
+
+[2
+
+] <"../images/architecture".png, id=101, 1486.8348pt x 1248.8256pt>
+File: "../images/architecture".png Graphic file (type png)
+
+<use "../images/architecture".png>
+Package pdftex.def Info: "../images/architecture".png used on input line 132.
+(pdftex.def)             Requested size: 446.05388pt x 374.65057pt.
+
+Overfull \hbox (48.5689pt too wide) in paragraph at lines 132--133
+ [] 
+ []
+
+[3 <../images/LSTM_cell.png>] [4 <../images/architecture.png>] [5]
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <10> not available
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 203.
+ [6]
+Underfull \hbox (badness 10000) in paragraph at lines 217--220
 []\OT1/ptm/m/n/10 Christopher Olah \OT1/ptm/m/it/10 Un-det-stand-ing LSTM\OT1/p
 tm/m/n/10 , []$\OT1/pcr/m/n/10 http : / / colah . github . io / posts /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 202--205
+Underfull \hbox (badness 10000) in paragraph at lines 222--225
 []\OT1/ptm/m/n/10 Michael Nielsen \OT1/ptm/m/it/10 Neu-ral Net-works and Deep L
 earn-ing\OT1/ptm/m/n/10 , []$\OT1/pcr/m/n/10 http : / /
  []
 
-[6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 233.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 233.
- (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 233.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 233.
-Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 96F66D58CE6316CF75A8CA7ED300ADD3;1045.
 
+Underfull \hbox (badness 10000) in paragraph at lines 232--235
+[]\OT1/ptm/m/n/10 Erik Bern-hards-son. \OT1/ptm/m/it/10 Re-cur-rent Neu-ral Net
+-works for Col-lab-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--235
+\OT1/ptm/m/it/10 o-ra-tive Fil-ter-ing []$\OT1/pcr/m/n/10 http : / / erikbern .
+ com / 2014 / 06 / 28 /
+ []
+
+[7]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 261.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 261.
+ (./report.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 261.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 261.
+
+
+Package rerunfilecheck Warning: File `report.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report.out':
+(rerunfilecheck)             Before: 05E3905631F9A5D7A664095E8DB2E870;1017
+(rerunfilecheck)             After:  5BAD5D86F3FC4284353681C6E6A56924;1020.
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 233.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 261.
  ) 
 Here is how much of TeX's memory you used:
- 19377 strings out of 493089
- 359986 string characters out of 6134841
- 421540 words of memory out of 5000000
- 22496 multiletter control sequences out of 15000+600000
- 16580 words of font info for 39 fonts, out of 8000000 for 9000
+ 19391 strings out of 493089
+ 360187 string characters out of 6134841
+ 421604 words of memory out of 5000000
+ 22504 multiletter control sequences out of 15000+600000
+ 17095 words of font info for 41 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,8n,54p,1068b,332s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,8n,54p,976b,335s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
 live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texli
 ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2015/t
-exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type
-1/urw/times/utmri8a.pfb>
-Output written on report.pdf (6 pages, 192031 bytes).
+e/2015/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2015/t
+exmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2015/texmf-dis
+t/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/ty
+pe1/urw/times/utmr8a.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/urw/ti
+mes/utmri8a.pfb>
+Output written on report.pdf (7 pages, 404184 bytes).
 PDF statistics:
- 173 PDF objects out of 1000 (max. 8388607)
- 153 compressed objects within 2 object streams
- 35 named destinations out of 1000 (max. 500000)
- 146 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 201 PDF objects out of 1000 (max. 8388607)
+ 177 compressed objects within 2 object streams
+ 38 named destinations out of 1000 (max. 500000)
+ 151 words of extra memory for PDF output out of 10000 (max. 10000000)
 
