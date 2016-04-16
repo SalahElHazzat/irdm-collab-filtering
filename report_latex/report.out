@@ -7,8 +7,10 @@
 \BOOKMARK [2][-]{subsection.3.1}{Batching}{section.3}% 7
 \BOOKMARK [2][-]{subsection.3.2}{Training Method}{section.3}% 8
 \BOOKMARK [2][-]{subsection.3.3}{Configuration}{section.3}% 9
-\BOOKMARK [1][-]{section.4}{Results and Evaluation - might need different heading}{}% 10
-\BOOKMARK [2][-]{subsection.4.1}{Comparison to item based recommendation systems}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.2}{Results}{section.4}% 12
-\BOOKMARK [2][-]{subsection.4.3}{Possible steps to improve}{section.4}% 13
-\BOOKMARK [1][-]{section.5}{Code structure}{}% 14
+\BOOKMARK [2][-]{subsection.3.4}{Data Set}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Results and Evaluation - might need different heading}{}% 11
+\BOOKMARK [2][-]{subsection.4.1}{Comparison to item based recommendation systems}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Results}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.3}{Difficulty in interpreting the results}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.4}{Possible steps to improve}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Code structure}{}% 16
