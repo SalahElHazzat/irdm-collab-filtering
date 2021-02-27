@@ -25,7 +25,7 @@ class MusicModel(object):
             embedding = tf.get_variable("embedding", [config.num_songs, config.embedding_size])
             inputs = tf.nn.embedding_lookup(embedding, self._input_data)
 
-        inputs = [tf.squeeze(input_, [1]) for input_ in tf.split(1, config.num_steps, inputs)]
+        inputs = [tf.squeeze(input_, [1]) for input_ in tf.split(inputs , config.num_steps, 1)]
         outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state,
                                  sequence_length=self._actual_seq_lengths)
 
