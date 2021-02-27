@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 # import lastfm_reader as data_reader
 import yes_reader as data_reader
 from musicmodel import MusicModel
