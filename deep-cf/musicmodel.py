@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras.layers import rnn
+import keras.layers as rnn
 
 
 # This class builds a Tensorflow graph which can be trained or used for inference
