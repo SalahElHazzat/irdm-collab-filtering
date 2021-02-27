@@ -17,7 +17,7 @@ class MusicModel(object):
         cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * config.num_layers)
 
         # Make the initial state operator available
-        self._initial_state = cell.zero_state(config.batch_size, tf.float32)
+        self._initial_state = cell.zero_state(config.batch_size, tf.int32)
 
         # Map the inputs to their current embedding vectors
         # Embedding lookup must happen on the CPU as it is not currently supported on GPU
