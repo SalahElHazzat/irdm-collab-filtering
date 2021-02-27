@@ -8,16 +8,16 @@ class MusicModel(object):
     def __init__(self, config):
         self._config = config
         # Create placeholders for the input and the targets
-        self._input_data = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
-        self._targets = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
-        self._actual_seq_lengths = tf.placeholder(tf.int32, [config.batch_size])
-        self._prediction = tf.placeholder(tf.int32, [config.batch_size, config.num_steps])
+        self._input_data = tf.placeholder(tf.float32, [config.batch_size, config.num_steps])
+        self._targets = tf.placeholder(tf.float32, [config.batch_size, config.num_steps])
+        self._actual_seq_lengths = tf.placeholder(tf.float32, [config.batch_size])
+        self._prediction = tf.placeholder(tf.float32, [config.batch_size, config.num_steps])
         lstm_cell = tf.nn.rnn_cell.BasicLSTMCell(config.hidden_size) # Create a basic LSTM cell
         # Now replicate the LSTM cell to create layers for a deep network
         cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * config.num_layers)
 
         # Make the initial state operator available
-        self._initial_state = cell.zero_state(config.batch_size, tf.int32)
+        self._initial_state = cell.zero_state(config.batch_size, tf.float32)
 
         # Map the inputs to their current embedding vectors
         # Embedding lookup must happen on the CPU as it is not currently supported on GPU
